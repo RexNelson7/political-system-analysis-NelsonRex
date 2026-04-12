@@ -32,5 +32,10 @@ The most present clue I saw for data cleaning in this set was the amount of NA's
 
 #### Two Visualizations
 
-1.  ![Electoral System v. Electoral Category Index](images/visual3.png)
-2.  ![Civilian Deaths v. Regime Index](images/visual2.png)
+1.  
+
+    ![Electoral System v. Electoral Category Index](images/visual3.png)
+
+2.  
+
+    ![Civilian Deaths v. Regime Index](images/visual2.png)

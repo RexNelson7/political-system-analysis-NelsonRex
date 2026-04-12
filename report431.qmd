@@ -1,5 +1,5 @@
 ---
-title: "Unit 1 Project"
+title: "Unit 1 Project: Geopolitical System Analysis"
 format: html
 editor: visual
 ---
@@ -7,10 +7,14 @@ editor: visual
 #### Data
 
 ```{r}
-#install.packages("tidytuesdayR")
-tuesdata <- tidytuesdayR::tt_load('2024-11-05')
+#| eval: false
+install.packages("tidytuesdayR")
 ```
 
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2024-11-05')
+library(tidyverse)
+```
 ## Week 1
 
 #### Data Context
@@ -33,19 +37,41 @@ The most present clue I saw for data cleaning in this set was the amount of NA's
 
 #### Two Visualizations
 
-1.  
+1.  ![Electoral System v. Electoral Category Index](images/visual3.png)
+2.  ![Civilian Deaths v. Regime Index](images/visual2.png)
 
-    ![Electoral System v. Electoral Category Index](images/visual3.png)
-
-2.  
-
-    ![Civilian Deaths v. Regime Index](images/visual2.png)
 
 ## Week 2
-We are focusing on the relationship between house members and democracy index. My contribution to the unmodified data summaries is a summary of the total number of lower house representatives by country. I used iteration with a for loop to calculate the total for each country.
+
+```{r}
+dem_df<- tuesdata$democracy_data
+```
+
+### Two Summaries (Unaltered Columns)
+
+#### Summary 1: custom function: percentage of recorded years where each country was a democracy
+
+```{r}
+democracy_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-11-05/democracy_data.csv')
+countries <- unique(democracy_data$country_code)
+
+democ_func <- function(x){
+  mean(x, na.rm = TRUE) * 100
+}
+
+democracy_data |>
+  group_by(country_code) |>
+  summarize(
+    total_years = sum(!is.na(is_democracy)),
+    democratic_years = sum(is_democracy, na.rm = TRUE),
+    pct_democ = democ_func(is_democracy)
+  )
+```
+
+#### Summary 2: iterated total representatives from each country
+
 ```{r}
 democracy_data <- tuesdata$democracy_data
-
 countries <- unique(democracy_data$country_name)
 total_reps <- numeric(length(countries))
 
@@ -67,6 +93,37 @@ knitr::kable(
   head(country_rep_summary, 20),
   col.names = c("Country", "Total Lower House Members"),
   caption = "Total lower house members by country")
+```
+
+### Two Summaries (Altered Columns)
+
+#### Summary 1: Custom function w/ iteration - average democracy index over recorded history per country
+
+```{r}
+avg_dem <- function(country) {
+  dem_df %>%
+    filter(country_name == country) %>%
+    summarize(avg = mean(spatial_democracy, na.rm = TRUE)) %>%
+    pull(avg)
+}
+
+avg_df <- dem_df %>%
+  distinct(country_name) %>%
+  mutate(Average_Democracy = map_dbl(country_name, avg_dem))
+
+head(avg_df)
+```
+
+#### Summary 2: ratio of lower to upper house members
+
+```{r}
+house_ratio <- dem_df %>%
+  filter(is.na(lower_house_members)==FALSE & is.na(upper_house_members)==FALSE)%>%
+  mutate(chamber_ratio = lower_house_members/upper_house_members)
+
+house_ratio %>%
+  select(country_name,chamber_ratio)%>%
+  head(30)
 ```
 
 
