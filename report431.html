@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>Unit 1 Project: Geopolitical System Analysis</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -61,15 +64,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="report431_files/libs/clipboard/clipboard.min.js"></script>
 <script src="report431_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="report431_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="report431_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="report431_files/libs/quarto-html/popper.min.js"></script>
 <script src="report431_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="report431_files/libs/quarto-html/anchor.min.js"></script>
 <link href="report431_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="report431_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="report431_files/libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="report431_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="report431_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="report431_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="report431_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -484,48 +486,50 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dem_overlap <span class="ot">&lt;-</span> dem_df <span class="sc">%&gt;%</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2011</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>happiness_overlap <span class="ot">&lt;-</span> happiness_clean <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&lt;=</span> <span class="dv">2020</span>)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># now we merge them into one data frame</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">#hdiXdem_df &lt;- dem_overlap %&gt;%</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#left_join(happiness_overlap, by = c("country_name", "year"))</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># this will weed out the countries that we weren't able to directly match by name</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># hdiXdem_df %&gt;%</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="co"># filter(is.na(well_being)) %&gt;%</span></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co">#  distinct(country_name) %&gt;%</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  arrange(country_name)</span></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co"># so that gave 208 countries which surprised me because the names looked the same to me. this makes me believe i messed up on the joining of the dataframes.</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"># i'm gonna try the join again, only based off name, not year as well</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co"># hdiXdem_df &lt;- dem_overlap %&gt;%</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a> <span class="co"># left_join(happiness_overlap, by = "country_name")</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="co"># okay that isn't what we want either, that gives us a many to many dataframe, which is bad, so what I'll do is take the average of the happiness index and democracy index across the years and compare those. For reference, we don't want the many to many dataframe because it has 13010 rows.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>dem_overlap <span class="ot">&lt;-</span> dem_overlap <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(is_democracy <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>happiness_overlap <span class="ot">&lt;-</span> happiness_clean <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&lt;=</span> <span class="dv">2020</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># now we merge them into one data frame</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">#hdiXdem_df &lt;- dem_overlap %&gt;%</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#left_join(happiness_overlap, by = c("country_name", "year"))</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="co"># this will weed out the countries that we weren't able to directly match by name</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"># hdiXdem_df %&gt;%</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"># filter(is.na(well_being)) %&gt;%</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="co">#  distinct(country_name) %&gt;%</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co">#  arrange(country_name)</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="co"># so that gave 208 countries which surprised me because the names looked the same to me. this makes me believe i messed up on the joining of the dataframes.</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co"># i'm gonna try the join again, only based off name, not year as well</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"># hdiXdem_df &lt;- dem_overlap %&gt;%</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a> <span class="co"># left_join(happiness_overlap, by = "country_name")</span></span>
 <span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co"># average of both data frames</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>avg_dem <span class="ot">&lt;-</span> dem_overlap <span class="sc">%&gt;%</span></span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_name) <span class="sc">%&gt;%</span></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_democracy =</span> <span class="fu">mean</span>(spatial_democracy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>avg_happiness <span class="ot">&lt;-</span> happiness_overlap <span class="sc">%&gt;%</span></span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_name) <span class="sc">%&gt;%</span></span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_well_being =</span> <span class="fu">mean</span>(well_being, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a><span class="co"># new dataframe</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co"># okay that isn't what we want either, that gives us a many to many dataframe, which is bad, so what I'll do is take the average of the happiness index and democracy index across the years and compare those. For reference, we don't want the many to many dataframe because it has 13010 rows.</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="co"># average of both data frames</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>avg_dem <span class="ot">&lt;-</span> dem_overlap <span class="sc">%&gt;%</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_name) <span class="sc">%&gt;%</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_democracy =</span> <span class="fu">mean</span>(spatial_democracy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>avg_happiness <span class="ot">&lt;-</span> happiness_overlap <span class="sc">%&gt;%</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_name) <span class="sc">%&gt;%</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">avg_well_being =</span> <span class="fu">mean</span>(well_being, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>hdiXdem_df <span class="ot">&lt;-</span> avg_dem <span class="sc">%&gt;%</span></span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(avg_happiness, <span class="at">by =</span> <span class="st">"country_name"</span>)</span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a><span class="co"># now check again for unmatched countries</span></span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>hdiXdem_df <span class="sc">%&gt;%</span></span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(avg_well_being)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(country_name) <span class="sc">%&gt;%</span></span>
-<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(country_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a><span class="co"># new dataframe</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>hdiXdem_df <span class="ot">&lt;-</span> avg_dem <span class="sc">%&gt;%</span></span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(avg_happiness, <span class="at">by =</span> <span class="st">"country_name"</span>)</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a><span class="co"># now check again for unmatched countries</span></span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>hdiXdem_df <span class="sc">%&gt;%</span></span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(avg_well_being)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(country_name) <span class="sc">%&gt;%</span></span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(country_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 60 × 1
+<pre><code># A tibble: 46 × 1
    country_name          
    &lt;chr&gt;                 
  1 Anguilla              
@@ -535,23 +539,23 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
  5 Barbados              
  6 Bermuda               
  7 British Virgin Islands
- 8 Brunei                
- 9 Cape Verde            
-10 Cayman Islands        
-# ℹ 50 more rows</code></pre>
+ 8 Cape Verde            
+ 9 Cayman Islands        
+10 Cook Islands          
+# ℹ 36 more rows</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#so that gives us 60 countries that are not in our happiness set that are in the democracy set. What we'll do now is use anti_join to see what countries are in the democracy set that are not in the happiness set, and vice versa.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#so that gives us 46 countries that are not in our happiness set that are in the democracy set. What we'll do now is use anti_join to see what countries are in the democracy set that are not in the happiness set, and vice versa.</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>dem_not_happy <span class="ot">&lt;-</span> <span class="fu">anti_join</span>(avg_dem, avg_happiness, <span class="at">by =</span> <span class="st">"country_name"</span>)</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>happy_not_dem <span class="ot">&lt;-</span> <span class="fu">anti_join</span>(avg_happiness, avg_dem, <span class="at">by =</span> <span class="st">"country_name"</span>)</span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(dem_not_happy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 60</code></pre>
+<pre><code>[1] 46</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(happy_not_dem)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 19</code></pre>
+<pre><code>[1] 73</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dem_not_happy, <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -565,65 +569,53 @@ Specify the column types or set `show_col_types = FALSE` to quiet this message.
  5 Barbados                       1    
  6 Bermuda                        1    
  7 British Virgin Islands         1    
- 8 Brunei                         1    
- 9 Cape Verde                     0.7  
-10 Cayman Islands                 0.5  
-11 Congo, Dem. Rep.               0.144
-12 Congo, Republic of             0    
-13 Cook Islands                   1    
-14 Curacao                        0.75 
-15 Czech Republic                 1    
-16 Côte d`Ivoire                  0.64 
-17 Dominica                       1    
-18 Equatorial Guinea              0    
-19 Eritrea                        0    
-20 Fiji                           0.75 </code></pre>
+ 8 Cape Verde                     0.7  
+ 9 Cayman Islands                 0.5  
+10 Cook Islands                   1    
+11 Curacao                        0.75 
+12 Czech Republic                 1    
+13 Dominica                       1    
+14 Gambia, The                    1    
+15 Gibraltar                      1    
+16 Grenada                        0.875
+17 Guam                           1    
+18 Guinea-Bissau                  1    
+19 Kiribati                       0.667
+20 Korea, Republic of             0.333</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>happy_not_dem</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 19 × 2
-   country_name             avg_well_being
-   &lt;chr&gt;                             &lt;dbl&gt;
- 1 Congo                              4.50
- 2 Czechia                            6.64
- 3 Côte d’Ivoire                      4.51
- 4 DR Congo                           4.33
- 5 Gambia                             4.77
- 6 Hong Kong SAR of China             5.47
- 7 Kosovo                             5.71
- 8 Lao PDR                            4.88
- 9 North Cyprus                       5.67
-10 Republic of Korea                  5.89
-11 Republic of Moldova                5.70
-12 Russian Federation                 5.64
-13 Slovakia                           6.09
-14 Somaliland Region                  4.91
-15 State of Palestine                 4.67
-16 Taiwan Province of China           6.36
-17 Trinidad and Tobago                6.23
-18 Türkiye                            5.30
-19 Viet Nam                           5.28</code></pre>
+<pre><code># A tibble: 73 × 2
+   country_name           avg_well_being
+   &lt;chr&gt;                           &lt;dbl&gt;
+ 1 Afghanistan                      3.44
+ 2 Algeria                          5.45
+ 3 Angola                           4.21
+ 4 Azerbaijan                       5.07
+ 5 Bahrain                          6.04
+ 6 Bangladesh                       4.71
+ 7 Belarus                          5.57
+ 8 Bosnia and Herzegovina           5.22
+ 9 Burkina Faso                     4.24
+10 Cambodia                         4.32
+# ℹ 63 more rows</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># after looking through it, it seems that the countries that were in dem_not_happy were a lot of small, island based nation states that don't necessarily need to be included for this to be a fair comparison. The countries in happy_not_dem were all countries with names that may be different between the two sets. these are the countries we will recode. Using my own imperfect analysis, I have chosen the countries I will use from this list of unmatched country names, and I will use this to find the names for those countries in the democracy df</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>avg_dem <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">str_detect</span>(country_name, <span class="st">"Korea|Mold|Congo|Trinidad|Hong|Palest|Taiwan|Turkey|Czech|Gambia|Slov"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 13 × 2
-   country_name             avg_democracy
-   &lt;chr&gt;                            &lt;dbl&gt;
- 1 Congo, Dem. Rep.                 0.144
- 2 Congo, Republic of               0    
- 3 Czech Republic                   1    
- 4 Gambia, The                      1    
- 5 Hong Kong                        0    
- 6 Korea, People's Republic         0.333
- 7 Korea, Republic of               0.333
- 8 Moldova                          1    
- 9 Slovak Republic                  1    
-10 Slovenia                         0.975
-11 Taiwan                           0.667
-12 Trinidad &amp;Tobago                 0.833
-13 Turkey                           0.625</code></pre>
+<pre><code># A tibble: 9 × 2
+  country_name       avg_democracy
+  &lt;chr&gt;                      &lt;dbl&gt;
+1 Czech Republic             1    
+2 Gambia, The                1    
+3 Korea, Republic of         0.333
+4 Moldova                    1    
+5 Slovak Republic            1    
+6 Slovenia                   0.975
+7 Taiwan                     0.667
+8 Trinidad &amp;Tobago           0.833
+9 Turkey                     0.625</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># now that we know the names of all the countries that we want in both data sets, I will fix the happiness dataset to match the names from the democracy set, and then we will use an inner join to only get the countries that we want.</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -951,7 +943,7 @@ Attaching package: 'jsonlite'</code></pre>
 <section id="visualization-hdi-vs.-democracy-index" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-hdi-vs.-democracy-index">Visualization (HDI vs.&nbsp;Democracy Index)</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hdiXdem_df,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>scatter1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(hdiXdem_df,</span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> avg_democracy, <span class="at">y =</span> avg_well_being)) <span class="sc">+</span></span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
 <span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
@@ -959,7 +951,8 @@ Attaching package: 'jsonlite'</code></pre>
 <span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Well-Being"</span>,</span>
 <span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Relationship Between Democracy and Well-Being"</span></span>
 <span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>scatter1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

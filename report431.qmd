@@ -152,6 +152,8 @@ range(dem_df$year, na.rm = TRUE) # 1950 to 2020
 
 dem_overlap <- dem_df %>%
   filter(year >= 2011)
+dem_overlap <- dem_overlap %>%
+  filter(is_democracy == TRUE)
 happiness_overlap <- happiness_clean %>%
   filter(year <= 2020)
 
@@ -192,7 +194,7 @@ hdiXdem_df %>%
   filter(is.na(avg_well_being)) %>%
   distinct(country_name) %>%
   arrange(country_name)
-#so that gives us 60 countries that are not in our happiness set that are in the democracy set. What we'll do now is use anti_join to see what countries are in the democracy set that are not in the happiness set, and vice versa.
+#so that gives us 46 countries that are not in our happiness set that are in the democracy set. What we'll do now is use anti_join to see what countries are in the democracy set that are not in the happiness set, and vice versa.
 
 dem_not_happy <- anti_join(avg_dem, avg_happiness, by = "country_name")
 happy_not_dem <- anti_join(avg_happiness, avg_dem, by = "country_name")
@@ -423,7 +425,7 @@ head(final_df[c("country", "year", "population","pop_prop")])
 ### Visualization (HDI vs. Democracy Index)
 
 ```{r}
-ggplot(hdiXdem_df,
+scatter1 <- ggplot(hdiXdem_df,
        aes(x = avg_democracy, y = avg_well_being)) +
   geom_point() +
   labs(
@@ -432,6 +434,8 @@ ggplot(hdiXdem_df,
     title = "Relationship Between Democracy and Well-Being"
   ) +
   theme_bw()
+scatter1
+
 ```
 
 
