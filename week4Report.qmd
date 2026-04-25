@@ -1,0 +1,134 @@
+---
+title: "Week4Report"
+author: "Rex Nelson"
+format:
+  html:
+    theme: cosmo
+    code-fold: true
+    embed-resources: true
+    toc: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(readxl)
+library(ggrepel)
+library(scales)
+```
+
+
+### Week 4: catching up with the data from past sessions
+```{r}
+tuesdata <- tidytuesdayR::tt_load("2024-11-05")
+
+dem_df <- tuesdata$democracy_data
+happiness <- read_csv("datasets/whr_data.csv")
+```
+
+```{r}
+happiness_clean <- happiness %>%
+  select(
+    country_name = `Country name`,
+    year = Year,
+    well_being = `Life evaluation (3-year average)`)
+
+# match years
+dem_overlap <- dem_df %>%
+  filter(year >= 2011, year <= 2020)
+```
+
+```{r}
+avg_dem <- dem_overlap %>%
+  group_by(country_name) %>%
+  summarize(
+    avg_democracy = mean(spatial_democracy, na.rm = TRUE),
+    .groups = "drop")
+```
+
+```{r}
+country_fix_happiness <- c(
+  "Congo" = "Congo, Republic of",
+  "Czechia" = "Czech Republic",
+  "Côte d’Ivoire" = "Ivory Coast",
+  "DR Congo" = "Congo, Dem. Rep.",
+  "Gambia" = "Gambia, The",
+  "Hong Kong SAR of China" = "Hong Kong",
+  "Lao PDR" = "Laos",
+  "Republic of Korea" = "Korea, Republic of",
+  "Republic of Moldova" = "Moldova",
+  "Russian Federation" = "Russia",
+  "Slovakia" = "Slovak Republic",
+  "State of Palestine" = "Palestine",
+  "Taiwan Province of China" = "Taiwan",
+  "Trinidad and Tobago" = "Trinidad &Tobago",
+  "Türkiye" = "Turkey",
+  "Viet Nam" = "Vietnam"
+)
+```
+
+
+```{r}
+avg_happiness_fixed <- happiness_clean %>%
+  filter(year >= 2011, year <= 2020) %>%
+  mutate(country_name = recode(country_name, !!!country_fix_happiness)) %>%
+  group_by(country_name) %>%
+  summarize(
+    avg_well_being = mean(well_being, na.rm = TRUE),
+    .groups = "drop")
+```
+```{r}
+hdiXdem_df <- avg_dem %>%
+  inner_join(avg_happiness_fixed, by = "country_name") %>%
+  drop_na(avg_democracy, avg_well_being)
+```
+
+#### Making the Visualization for Spatial Democracy vs Well-Being
+
+```{r}
+# Identifying which countries to label:
+top_wb  <- hdiXdem_df %>% slice_max(avg_well_being, n = 3, with_ties = FALSE)
+low_wb  <- hdiXdem_df %>% slice_min(avg_well_being, n = 3, with_ties = FALSE)
+top_dem <- hdiXdem_df %>% slice_max(avg_democracy, n = 2, with_ties = FALSE)
+low_dem <- hdiXdem_df %>% slice_min(avg_democracy, n = 2, with_ties = FALSE)
+
+label_countries <- bind_rows(top_wb, low_wb, top_dem, low_dem) %>%
+  distinct(country_name, .keep_all = TRUE)
+```
+
+```{r}
+scatter1 <- ggplot(
+  hdiXdem_df,
+  aes(x = avg_democracy, y = avg_well_being)
+) +
+  geom_point(size = 2.8, alpha = 0.85, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1, color = "orange") +
+  geom_text_repel(
+    data = label_countries,
+    aes(label = country_name),
+    size = 3,
+    max.overlaps = 20
+  ) +
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.1)) +
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) +
+  labs(
+    title = "Democracy and Well-Being Are Positively Associated",
+    subtitle = "Country averages from 2011 to 2020",
+    x = "Average Spatial Democracy Score",
+    y = "Average Well-Being Score"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold")
+  )
+
+```
+
+```{r} 
+#| fig-alt: Scatter plot of average spatial democracy scores versus average well-being for countries between 2011 and 2020. Each point represents a country. The points form an upward pattern, indicating that countries with higher democracy scores tend to have higher average well-being. A few countries at the high end are Finland, Switzerland, and Australia, and a few countries at the low end are Burundi, Central African Republic, and South Sudan.
+scatter1
+```
+
