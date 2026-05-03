@@ -1,0 +1,157 @@
+---
+title: "Geopolitical System Analysis"
+format: 
+  dashboard:
+    theme: cosmo
+embed-resources: true
+code-fold: true
+editor: visual
+---
+```{r} 
+#| output: false
+library(httr)
+library(tidyjson)
+library(jsonlite)
+library(tidyverse)
+library(glue)
+library(readxl)
+library(ggrepel)
+library(broom)
+library(scales)
+library(knitr)
+library(readr)
+
+```
+
+```{r}
+dem_df <- readRDS("democracy_data.rds")
+happiness <- read_csv("datasets/whr_data.csv")
+
+happiness_clean <- happiness %>%
+  select(
+    country_name = `Country name`,
+    year = Year,
+    well_being = `Life evaluation (3-year average)`
+  )
+
+dem_overlap <- dem_df %>%
+  filter(year >= 2011)
+
+happiness_overlap <- happiness_clean %>%
+  filter(year <= 2020)
+
+avg_dem <- dem_overlap %>%
+  group_by(country_name) %>%
+  summarize(avg_democracy = mean(spatial_democracy, na.rm = TRUE), .groups = "drop")
+
+country_fix_happiness <- c(
+  "Congo" = "Congo, Republic of",
+  "Czechia" = "Czech Republic",
+  "Côte d’Ivoire" = "Ivory Coast",
+  "DR Congo" = "Congo, Dem. Rep.",
+  "Gambia" = "Gambia, The",
+  "Hong Kong SAR of China" = "Hong Kong",
+  "Lao PDR" = "Laos",
+  "Republic of Korea" = "Korea, Republic of",
+  "Republic of Moldova" = "Moldova",
+  "Russian Federation" = "Russia",
+  "Slovakia" = "Slovak Republic",
+  "State of Palestine" = "Palestine",
+  "Taiwan Province of China" = "Taiwan",
+  "Trinidad and Tobago" = "Trinidad &Tobago",
+  "Türkiye" = "Turkey",
+  "Viet Nam" = "Vietnam"
+)
+
+avg_happiness_fixed <- happiness_overlap %>%
+  mutate(country_name = recode(country_name, !!!country_fix_happiness)) %>%
+  group_by(country_name) %>%
+  summarize(avg_well_being = mean(well_being, na.rm = TRUE), .groups = "drop")
+
+hdiXdem_df <- avg_dem %>%
+  inner_join(avg_happiness_fixed, by = "country_name") %>%
+  filter(!is.na(avg_democracy), !is.na(avg_well_being))
+
+top_wb  <- hdiXdem_df %>% slice_max(avg_well_being, n = 3, with_ties = FALSE)
+low_wb  <- hdiXdem_df %>% slice_min(avg_well_being, n = 3, with_ties = FALSE)
+top_dem <- hdiXdem_df %>% slice_max(avg_democracy, n = 2, with_ties = FALSE)
+low_dem <- hdiXdem_df %>% slice_min(avg_democracy, n = 2, with_ties = FALSE)
+
+label_countries <- bind_rows(top_wb, low_wb, top_dem, low_dem) %>%
+  distinct(country_name, .keep_all = TRUE)
+```
+
+## Research Question 2
+
+### Column {.w-50}
+
+#### Summary Table: Democracy and Well-Being
+
+```{r}
+#| tbl-cap: "Summary statistics for average spatial democracy and average well-being scores."
+
+hdiXdem_df %>%
+  summarize(
+    Countries = n(),
+    `Mean Democracy` = mean(avg_democracy, na.rm = TRUE),
+    `Mean Well-Being` = mean(avg_well_being, na.rm = TRUE),
+    `Correlation` = cor(avg_democracy, avg_well_being, use = "complete.obs")
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  knitr::kable(
+    caption = "Summary statistics for Research Question 2."
+  )
+```
+
+#### Data Visualization 1
+
+```{r}
+#| fig-cap: "Scatterplot showing the relationship between average spatial democracy and average well-being from 2011 to 2020."
+
+ggplot(hdiXdem_df, aes(x = avg_democracy, y = avg_well_being)) +
+  geom_point(size = 2.8, alpha = 0.85, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1, color = "orange") +
+  geom_text_repel(
+    data = label_countries,
+    aes(label = country_name),
+    size = 3,
+    max.overlaps = 20
+  ) +
+  labs(
+    title = "Democracy and Well-Being Are Positively Associated",
+    subtitle = "Country averages from 2011 to 2020",
+    x = "Average Spatial Democracy Score",
+    y = "Average Well-Being Score"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+### Column {.w-50}
+
+#### Data Visualization 2
+
+```{r}
+#| fig-cap: "Distribution of well-being across different levels of democracy."
+
+hdiXdem_df %>%
+  mutate(
+    democracy_group = case_when(
+      avg_democracy < 0.33 ~ "Low",
+      avg_democracy < 0.66 ~ "Medium",
+      TRUE ~ "High"),
+    democracy_group = factor(democracy_group, levels = c("Low", "Medium", "High"))
+  ) %>%
+  ggplot(aes(x = democracy_group, y = avg_well_being, fill = democracy_group)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Well-Being Increases with Democracy Level",
+    x = "Democracy Level",
+    y = "Average Well-Being"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
